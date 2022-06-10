@@ -2,6 +2,7 @@ import db from "../db.js";
 import joi from "joi";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from 'uuid';
+import { validation } from "../services/validation.js";
 
 export async function signUp(req, res) {
     const { body } = req;
@@ -11,11 +12,7 @@ export async function signUp(req, res) {
         password: joi.string().required(),
         confirmPassword: joi.ref('password')
     });
-    const validation = authSchema.validate(body, { abortEarly: true });
-    if (validation.error) {
-        console.log(validation.error.details);
-        return res.sendStatus(422);
-    }
+    validation(authSchema, body);
     try {
         const user = await db.query('SELECT email FROM users WHERE email = $1', [body.email]);
         if (user.rows[0]) {
@@ -36,11 +33,7 @@ export async function singIn(req, res) {
         email: joi.string().required(),
         password: joi.string().required()
     });
-    const validation = authSchema.validate(body, { abortEarly: true });
-    if (validation.error) {
-        console.log(validation.error.details);
-        return res.sendStatus(422);
-    }
+    validation(authSchema, body);
     try {
         const user = await db.query('SELECT password, id FROM users WHERE email = $1', [body.email]);
         if (user.rows[0] && bcrypt.compareSync(body.password, user.rows[0].password)) {
