@@ -45,7 +45,7 @@ export async function singIn(req, res) {
         const user = await db.query('SELECT password, id FROM users WHERE email = $1', [body.email]);
         if (user.rows[0] && bcrypt.compareSync(body.password, user.rows[0].password)) {
             const token = uuid();
-            await db.query('INSERT INTO sessions (userId, token) VALUES ($1,$2)', [user.rows[0].id, token]);
+            await db.query('INSERT INTO sessions ("userId", token) VALUES ($1,$2)', [user.rows[0].id, token]);
             res.send(token);
         } else {
             res.sendStatus(401);
