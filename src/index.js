@@ -13,6 +13,6 @@ app.use(express.json());
 app.use(authRouter);
 app.use(linksRouter);
 
-app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT || 5000, () => {
     console.log("Server running on port " + process.env.PORT);
 });
